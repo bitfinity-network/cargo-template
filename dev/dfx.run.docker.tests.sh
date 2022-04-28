@@ -13,16 +13,17 @@
 # Module name that produces wasm
 IC_MODULE_NAME="hello_ic"
 
-# You could use image GCP as well or any locally available
-# us-central1-docker.pkg.dev/dfx-server/dfx-containers/ic-dev-full:latest
+# Docker image to run tests
 CI_IMAGE=${CI_IMAGE:-"ghcr.io/infinity-swap/ic-dev-full:latest"}
-# getting the latest image for this tag
-docker pull $CI_IMAGE
 
 # For non empty value will clean before building wasm.
 # In a case if you are lazy and can not do it from CLI
 CARGO_CLEAN=""
 
+
+#
+# Now script execution begins
+#
 
 # Assuming that all scripts are in a ./dev directory
 SCRIPT_DIR=$(realpath $(dirname "$0"))
@@ -34,6 +35,9 @@ LOCAL_CARGO_HOME=$(realpath ${CARGO_HOME:-~/.cargo})
 
 DOCKER_HOME_DIR="/workspace/"
 DOCKER_PROJECT_DIR="/workspace/project"
+
+
+docker pull $CI_IMAGE
 
 docker run --rm -ti \
 -u $(id -u ${USER}):$(id -g ${USER}) \

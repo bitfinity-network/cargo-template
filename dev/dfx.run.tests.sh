@@ -29,6 +29,10 @@ fi
 
 IC_URI=${IC_URI:-"http://localhost:8000"}
 
+#
+# Now script execution begins
+#
+
 # Adjusting paths
 # Assuming that script is in ./dev folder
 SCRIPT_DIR=$(realpath $(dirname "$0"))
