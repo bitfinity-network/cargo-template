@@ -1,0 +1,16 @@
+name: Reusable
+
+on:
+  workflow_dispatch:
+    # Just run it
+
+jobs:
+  call-workflow:
+    uses: infinity-swap/.github/.github/workflows/tests-in-dfx.yml@main
+    with:
+      entrypoint-script: dev/dfx.run.tests.sh
+      ic-module-name: hello_ic
+    secrets:
+      gh_token: ${{ secrets.GH_PKG_TOKEN }}
+      gh_login: ${{ secrets.GH_PKG_LOGIN }}
+

@@ -14,6 +14,8 @@
 IC_MODULE_NAME="hello_ic"
 
 # Docker image to run tests
+# If github packages downloads are slow, try GCP registry:
+# us-central1-docker.pkg.dev/dfx-server/ci/ic-dev-full:latest
 CI_IMAGE=${CI_IMAGE:-"ghcr.io/infinity-swap/ic-dev-full:latest"}
 
 # For non empty value will clean before building wasm.
@@ -33,7 +35,7 @@ PROJECT_DIR=$(realpath "${SCRIPT_DIR}/..")
 
 LOCAL_CARGO_HOME=$(realpath ${CARGO_HOME:-~/.cargo})
 
-DOCKER_HOME_DIR="/workspace/"
+DOCKER_HOME_DIR="/workspace"
 DOCKER_PROJECT_DIR="/workspace/project"
 
 
