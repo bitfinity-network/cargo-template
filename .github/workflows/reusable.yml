@@ -1,15 +1,30 @@
-name: Reusable
+name: "Build & Puplish"
 
 on:
   workflow_dispatch:
     # Just run it
 
 jobs:
-  call-workflow:
-    uses: infinity-swap/.github/.github/workflows/tests-in-dfx.yml@main
+  build-test:
+    uses: infinity-swap/.github/.github/workflows/build-n-test.yml@main
     with:
-      entrypoint-script: dev/dfx.run.tests.sh
-      ic-module-name: hello_ic
+      test-script: dev/dfx.run.tests.sh
+      output-artifact: artiract-hello
+      # ic-module-name: hello_ic
+    secrets:
+      gh_token: ${{ secrets.GH_PKG_TOKEN }}
+      gh_login: ${{ secrets.GH_PKG_LOGIN }}
+  
+  publishing:
+    needs: [build-test]
+    uses: infinity-swap/.github/.github/workflows/publish-wrapped-artifact.yml@main
+    with:
+      input-artifact: artiract-hello
+      push-image: true
+      output-image-name: example-wrapped-wasm
+      output-image-tag-latest: true
+      # output-image-tag: latest
+
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}

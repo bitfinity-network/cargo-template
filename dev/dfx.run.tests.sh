@@ -14,8 +14,7 @@ if ! (which ic-nns-init) ; then
 fi
 
 if [ -z "$IC_MODULE_NAME" ]; then 
-    echo "Provide env var IC_MODULE_NAME"
-    exit 1
+    echo "No IC_MODULE_NAME provided -> will build all wasm modules"
 fi
 
 if [ -z "$DFX_WASMS_DIR" ]; then
@@ -51,11 +50,23 @@ if [ ! -z "$CARGO_CLEAN" ]; then
     cargo clean
 fi
 
-cargo build --target wasm32-unknown-unknown --release -p $IC_MODULE_NAME
-if [ $? -ne 0 ]; then  echo "ERROR!"; exit 1; fi
+if [ "$CI" = "true" ]; then
+    echo "CI detected skip wasm build -> it should be done by CI"
+else
+    if [ -z "$IC_MODULE_NAME" ]; then 
+        cargo build --target wasm32-unknown-unknown --release
+    else
+        cargo build --target wasm32-unknown-unknown --release -p $IC_MODULE_NAME
+    fi
+    if [ $? -ne 0 ]; then  echo "ERROR!"; exit 1; fi
+fi
 
 # Move compiled wasm to DFX_WASMS_DIR
-mv $PROJECT_TARGET_DIR/wasm32-unknown-unknown/release/$IC_MODULE_NAME.wasm $DFX_WASMS_DIR
+if [ -z "$IC_MODULE_NAME" ]; then 
+    mv $PROJECT_TARGET_DIR/wasm32-unknown-unknown/release/*.wasm $DFX_WASMS_DIR
+else
+    mv $PROJECT_TARGET_DIR/wasm32-unknown-unknown/release/$IC_MODULE_NAME.wasm $DFX_WASMS_DIR
+fi
 if [ $? -ne 0 ]; then  echo "ERROR!"; exit 1; fi
 
 echo -e "\n--- Available WASM modules ---\n"
