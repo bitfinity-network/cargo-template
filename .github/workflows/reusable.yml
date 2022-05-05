@@ -3,27 +3,49 @@ name: "Build & Puplish"
 on:
   workflow_dispatch:
     # Just run it
+  push:
+    branches:    
+      - 'main'  
+    tags:
+      - 'v*'
+      - '!**-test'
 
 jobs:
   build-test:
     uses: infinity-swap/.github/.github/workflows/build-n-test.yml@main
     with:
       test-script: dev/dfx.run.tests.sh
+      skip-test: ${{ github.ref_type == 'tag' }}
       output-artifact: artiract-hello
       # ic-module-name: hello_ic
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
   
+  publish-prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      latest: ${{ steps.tag-latest.outputs.value }}
+      tag: ${{ steps.tag.outputs.value }}
+    steps:
+
+      - id: tag-latest
+        if: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
+        run: echo "::set-output name=value::true"
+      
+      - id: tag
+        if: ${{ github.ref_type == 'tag' }}
+        run: echo "::set-output name=value::${{ github.ref_name }}"
+
   publishing:
-    needs: [build-test]
+    needs: [build-test, publish-prepare]
     uses: infinity-swap/.github/.github/workflows/publish-wrapped-artifact.yml@main
     with:
       input-artifact: artiract-hello
       push-image: true
       output-image-name: example-wrapped-wasm
-      output-image-tag-latest: true
-      # output-image-tag: latest
+      output-image-tag: ${{ needs.publish-prepare.outputs.tag }}
+      output-image-tag-latest: ${{ needs.publish-prepare.outputs.latest == 'true' }}
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
