@@ -17,7 +17,13 @@ jobs:
       test-script: dev/dfx.run.tests.sh
       skip-test: ${{ github.ref_type == 'tag' }}
       output-artifact: artiract-hello
-      # ic-module-name: hello_ic
+
+      # This is kinda tricky.
+      # We must provide some script that will put everything for publishing in the .artifact directory
+      artifact-script: |
+        cargo build --target wasm32-unknown-unknown --release
+        ic-cdk-optimizer target/wasm32-unknown-unknown/release/hello_ic.wasm -o .artifact/hello_ic.wasm
+
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
