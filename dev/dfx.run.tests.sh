@@ -50,16 +50,12 @@ if [ ! -z "$CARGO_CLEAN" ]; then
     cargo clean
 fi
 
-if [ "$CI" = "true" ]; then
-    echo "CI detected skip wasm build -> it should be done by CI"
+if [ -z "$IC_MODULE_NAME" ]; then 
+    cargo build --target wasm32-unknown-unknown --release
 else
-    if [ -z "$IC_MODULE_NAME" ]; then 
-        cargo build --target wasm32-unknown-unknown --release
-    else
-        cargo build --target wasm32-unknown-unknown --release -p $IC_MODULE_NAME
-    fi
-    if [ $? -ne 0 ]; then  echo "ERROR!"; exit 1; fi
+    cargo build --target wasm32-unknown-unknown --release -p $IC_MODULE_NAME
 fi
+if [ $? -ne 0 ]; then  echo "ERROR!"; exit 1; fi
 
 # Move compiled wasm to DFX_WASMS_DIR
 if [ -z "$IC_MODULE_NAME" ]; then 
