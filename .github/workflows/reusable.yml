@@ -22,6 +22,7 @@ jobs:
       # This is kinda tricky.
       # We must provide some script that will put everything for publishing in the .artifact directory
       artifact-script: |
+        cargo update
         cargo build --target wasm32-unknown-unknown --release
         ic-cdk-optimizer target/wasm32-unknown-unknown/release/hello_ic.wasm -o .artifact/hello_ic.wasm
 
