@@ -18,6 +18,7 @@ jobs:
       test-script: dev/dfx.run.tests.sh
       skip-test: ${{ github.ref_type == 'tag' }}
       output-artifact: artiract-hello
+      disable-cache: true
 
       # This is kinda tricky.
       # We must provide some script that will put everything for publishing in the .artifact directory
