@@ -12,22 +12,8 @@ on:
 
 jobs:
   
-  bump:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: '0'
-    - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.36.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_PKG_TOKEN }}
-        INITIAL_VERSION: "v0.0"
-        WITH_V: true
-        # DRY_RUN: true
-
   build-test:
-    uses: infinity-swap/.github/.github/workflows/build-n-test.yml@main
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
     with:
       test-script: dev/dfx.run.tests.sh
       skip-test: ${{ github.ref_type == 'tag' }}
@@ -45,7 +31,7 @@ jobs:
   
   publishing:
     needs: [build-test]
-    uses: infinity-swap/.github/.github/workflows/publish-wrapped-artifact.yml@main
+    uses: infinity-swap/ci-wf/.github/workflows/publish-wrapped-artifact.yml@main
     with:
       input-artifact: artiract-hello
       output-image-name: example-wrapped-wasm
@@ -58,5 +44,18 @@ jobs:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
 
-
+  bump:
+    if: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
+    needs: [build-test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PKG_TOKEN }}
+        WITH_V: true
+        # DRY_RUN: true
 
