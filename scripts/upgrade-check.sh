@@ -1,9 +1,15 @@
 #!/usr/bin/env sh
 # This script meant to be run inside latest development environment published by previous builds
 # set -e
-export RUST_BACKTRACE=full
 
-ARTIFACT_DIR="$(realpath $1)"
+ARTIFACT_DIR=${1:-"$ARTIFACT_DIR"}
+
+if [ -z "$ARTIFACT_DIR" ]; then
+    echo "ARTIFACT_DIR must be provided as env variable or passed as a first argument to the script!"
+    exit 1
+fi
+
+export RUST_BACKTRACE=full
 
 upgrade_single_canister() {
     local name="$1"
@@ -32,14 +38,15 @@ upgrade_single_canister() {
     # return $result
 }
 
-cd $HOME
+cd $WORK_DIR
 
 # Prepare dfx config
 J=$(jq ".canisters += {\"hello\":{\"type\":\"custom\",\"wasm\":\"$ARTIFACT_DIR/hello_ic.wasm\",\"candid\":\"$ARTIFACT_DIR/hello_ic.did\"}}" ./dfx.json) && echo "$J" > ./dfx.json
 
 dfx start --background
 # Need more time to initialize all 
-sleep 10
+echo "Waiting 60 sec for DFX to initialize fully"
+sleep 60
 
 # Here we could have multiple calls to different canisters
 upgrade_single_canister hello

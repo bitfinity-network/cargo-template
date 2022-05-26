@@ -16,7 +16,8 @@ jobs:
     uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
     with:
       test-script: dev/dfx.run.tests.sh
-      skip-test: ${{ github.ref_type == 'tag' }}
+      # skip-test: ${{ github.ref_type == 'tag' }}
+      skip-test: true
       output-artifact: artiract-hello
       # disable-cache: true
 
