@@ -24,15 +24,26 @@ jobs:
       # We must provide some script that will put everything for publishing in the .artifact directory
       artifact-script: |
         cargo update
-        cargo build --target wasm32-unknown-unknown --release
-        ic-cdk-optimizer target/wasm32-unknown-unknown/release/hello_ic.wasm -o .artifact/hello_ic.wasm
+        ./scripts/build-artifact.sh
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
   
-  publishing:
+  # Cheking possiblity to upgrade wasms
+  upgrade-check:
     needs: [build-test]
+    # uses: infinity-swap/ci-wf/.github/workflows/publish-wrapped-artifact.yml@main
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Skip for now"
+        # Should not work while tagging because latest image will be overriden by previous CI run
+        if: ${{ github.ref_type != 'tag' }}
+        run: |
+          env
+
+  publish-bin:
+    needs: [upgrade-check]
     uses: infinity-swap/ci-wf/.github/workflows/publish-wrapped-artifact.yml@main
     with:
       input-artifact: artiract-hello
@@ -46,9 +57,25 @@ jobs:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
 
+  publish-dev:
+    needs: [upgrade-check]
+    uses: infinity-swap/ci-wf/.github/workflows/publish-dev-image.yml@main
+    with:
+      input-artifact: artiract-hello
+      dockerfile: ./Dockerfile.dev
+      output-image-name: example-dev-image
+      # Condition to use latest tag
+      output-image-tag-latest: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
+      # Condition to publish docker image
+      push-image: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+
+    secrets:
+      gh_token: ${{ secrets.GH_PKG_TOKEN }}
+      gh_login: ${{ secrets.GH_PKG_LOGIN }}
+
   bump:
     if: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
-    needs: [build-test]
+    needs: [publish-bin, publish-dev]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

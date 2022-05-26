@@ -1,0 +1,24 @@
+FROM ghcr.io/infinity-swap/ic-dev-full:latest
+
+# Input directory with files to wrap
+ARG SOURCE_DIR=.
+
+COPY $SOURCE_DIR/.artifact/*.wasm ${DFX_WASMS_DIR}/
+COPY $SOURCE_DIR/.artifact/*.did ${DFX_DID_DIR}/
+COPY scripts/entrypoint.sh /
+
+COPY --chown=root:root $SOURCE_DIR/scripts/init-canisters.sh /usr/local/bin/
+
+# Adding config to dfx.json
+RUN J=$(jq ".canisters += {\"hello\":{\"type\":\"custom\",\"wasm\":\"$DFX_WASMS_DIR/hello_ic.wasm\",\"candid\":\"$DFX_DID_DIR/hello_ic.did\"}}" ./dfx.json) && echo "$J" > ./dfx.json
+
+RUN cat ./dfx.json
+
+RUN echo "DEBUG:"
+RUN ls -la $DFX_WASMS_DIR
+RUN ls -la $DFX_DID_DIR
+
+# Configure initial environment
+RUN (dfx start --background) && init-canisters.sh &&  (dfx stop)
+
+ENTRYPOINT [ "/entrypoint.sh" ]
