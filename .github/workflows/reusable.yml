@@ -30,17 +30,17 @@ jobs:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
   
-  # Cheking possiblity to upgrade wasms
   upgrade-check:
     needs: [build-test]
-    # uses: infinity-swap/ci-wf/.github/workflows/publish-wrapped-artifact.yml@main
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Skip for now"
-        # Should not work while tagging because latest image will be overriden by previous CI run
-        if: ${{ github.ref_type != 'tag' }}
-        run: |
-          env
+    uses: infinity-swap/ci-wf/.github/workflows/dfx-upgrade-check.yml@main
+    with:
+      latest-image: ghcr.io/infinity-swap/example-dev-image:latest
+      upgrade-script: ./scripts/upgrade-check.sh
+      input-artifact: artiract-hello
+      skip-check: ${{ github.ref_type == 'tag' }}
+    secrets:
+      gh_token: ${{ secrets.GH_PKG_TOKEN }}
+      gh_login: ${{ secrets.GH_PKG_LOGIN }}
 
   publish-bin:
     needs: [upgrade-check]

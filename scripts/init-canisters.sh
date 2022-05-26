@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 # Init DFX canisters inside DFX environment
-
 set -e
+export RUST_BACKTRACE=full
+
 WALLET=$(dfx identity get-wallet)
 NETWORK="local"
 
