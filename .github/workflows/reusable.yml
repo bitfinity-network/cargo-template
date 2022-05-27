@@ -16,8 +16,7 @@ jobs:
     uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
     with:
       test-script: dev/dfx.run.tests.sh
-      # skip-test: ${{ github.ref_type == 'tag' }}
-      skip-test: true
+      skip-test: ${{ github.ref_type == 'tag' }}
       output-artifact: artiract-hello
       # disable-cache: true
 
@@ -52,7 +51,7 @@ jobs:
       # Condition to use latest tag
       output-image-tag-latest: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
       # Condition to publish docker image
-      push-image: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+      push-image: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||  github.ref_type == 'tag' }}
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
@@ -68,7 +67,7 @@ jobs:
       # Condition to use latest tag
       output-image-tag-latest: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
       # Condition to publish docker image
-      push-image: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+      push-image: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||  github.ref_type == 'tag' }}
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
