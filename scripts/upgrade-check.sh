@@ -48,8 +48,15 @@ dfx start --background
 echo "Waiting 60 sec for DFX to initialize fully"
 sleep 60
 
+dfx canister call hello greet "Before upgrade"
+if [ $result -ne 0 ]; then exit 42; fi
+
 # Here we could have multiple calls to different canisters
 upgrade_single_canister hello
+
+
+dfx canister call hello greet "After upgrade"
+if [ $result -ne 0 ]; then exit 42; fi
 
 # Optional step
 dfx stop
