@@ -3,12 +3,12 @@ name: "Build & Puplish"
 on:
   workflow_dispatch:
     # Just run it
-  push:
-    branches:    
-      - 'main'  
-    tags:
-      - 'v*'
-      - '!**-test'
+  # push:
+  #   branches:    
+  #     - 'main'  
+  #   tags:
+  #     - 'v*'
+  #     - '!**-test'
 
 jobs:
   

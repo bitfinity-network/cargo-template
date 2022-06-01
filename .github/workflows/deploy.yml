@@ -1,0 +1,60 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  # Just run it
+
+env:
+  CARGO_TERM_COLOR: always
+  DEPLOY_ALOWED_USERS: ${{ secrets.DEPLOY_ALOWED_USERS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/infinity-swap/ic-dev-base:latest
+      credentials:
+        username: ${{ secrets.GH_PKG_LOGIN }}
+        password: ${{ secrets.GH_PKG_TOKEN }}
+
+    steps:
+      - name: Just check
+        run: |
+          echo "Actor is ${{ github.actor }}"
+
+      - name: So something
+        run: |
+          pwd
+          ls -la 
+
+      - name: So something
+        env:
+          IC_IDENTITY: ${{ secrets.DEPLOY_IC_IDENTITY }}
+        run: |
+          echo "$IC_IDENTITY" > ~/ic-identity.pem
+          ls -la ~
+          echo "CAT it out"
+          cat ~/ic-identity.pem
+          dfx identity import deployer ~/ic-identity.pem
+          dfx identity list
+
+      - name: Echo actual deploy
+        #!!! IMPORTANT !!!
+        # This line here is because of SECURITY concerns
+        # Do not remove it
+        if: contains(fromJson(env.DEPLOY_ALOWED_USERS), github.actor)
+        run: |
+          echo "DEPLOYING TO THE IC"
+      
+      - name: Deploy not allowed
+        #!!! IMPORTANT !!!
+        if: '! contains(fromJson(env.DEPLOY_ALOWED_USERS), github.actor)'
+        run: |
+          exit 99
+
+      - name: So something
+        run: |
+          pwd
+          ls -la
+          ls -la ~
+        
