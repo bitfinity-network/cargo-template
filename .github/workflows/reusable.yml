@@ -3,15 +3,13 @@ name: "Build & Puplish"
 on:
   workflow_dispatch:
     # Just run it
-  # push:
-  #   branches:    
-  #     - 'main'  
-  #   tags:
-  #     - 'v*'
-  #     - '!**-test'
+  push:
+    branches:    
+      - 'main'  
+    tags:
+      - 'v*'
 
 jobs:
-  
   build-test:
     uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
     with:
@@ -68,10 +66,13 @@ jobs:
       output-image-tag-latest: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
       # Condition to publish docker image
       push-image: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||  github.ref_type == 'tag' }}
+      gcp_registry_domain: us-central1-docker.pkg.dev
+      gcp_registry_image: dfx-server/dfx-containers/example-dev-image
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
+      gcp_registry_token: ${{ secrets.GCP_JSON_DEPLOY_TOKEN }}
 
   bump:
     if: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
