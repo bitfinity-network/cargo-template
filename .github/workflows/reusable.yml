@@ -2,10 +2,15 @@ name: "Build & Puplish"
 
 on:
   workflow_dispatch:
-    # Just run it
-  # push:
-  #   branches:    
-  #     - 'main'  
+    inputs: 
+      disable-cache:
+        description: 'Disable cargo cache'
+        type: boolean 
+        required: false
+
+  push:
+    branches:    
+      - 'main'  
   #   tags:
   #     - 'v*'
 
@@ -13,10 +18,11 @@ jobs:
   build-test:
     uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
     with:
+      container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.9
+      disable-cache: ${{ inputs.disable-cache == true }}
       test-script: dev/dfx.run.tests.sh
       skip-test: ${{ github.ref_type == 'tag' }}
       output-artifact: artiract-hello
-      # disable-cache: true
 
       # This is kinda tricky.
       # We must provide some script that will put everything for publishing in the .artifact directory
