@@ -17,6 +17,7 @@ jobs:
       gcp_image_uri: us-central1-docker.pkg.dev/dfx-server/dfx-containers/example-dev-image
       region: us-central1
       service: example-dev
+      audit-allow-warnings: true
 
     secrets:
       gcp_deploy_token: ${{ secrets.GCP_JSON_DEPLOY_TOKEN }}

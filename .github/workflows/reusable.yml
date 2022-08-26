@@ -16,9 +16,9 @@ on:
 
 jobs:
   build-test:
-    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@feature-audit
     with:
-      container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.9
+      container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.11
       disable-cache: ${{ inputs.disable-cache == true }}
       test-script: dev/dfx.run.tests.sh
       skip-test: ${{ github.ref_type == 'tag' }}
