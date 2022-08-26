@@ -22,7 +22,7 @@ jobs:
       disable-cache: ${{ inputs.disable-cache == true }}
       test-script: dev/dfx.run.tests.sh
       skip-test: ${{ github.ref_type == 'tag' }}
-      audit-allow-warnings: true
+      #audit-allow-warnings: true
       output-artifact: artiract-hello
 
       # This is kinda tricky.
