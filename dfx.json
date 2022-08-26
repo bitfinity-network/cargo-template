@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "dfx": "0.9.3",
+  "dfx": "0.11.1",
   "canisters": {
     "hello_ic": {
       "type": "rust",
@@ -21,7 +21,10 @@
     "build": {
       "packtool": "",
       "args": ""
-    }
+    },
+    "replica": {
+      "subnet_type":"system"
+  }
   },
   "networks": {
     "local": {
