@@ -15,8 +15,9 @@ on:
   #     - 'v*'
 
 jobs:
+  #Test tag detection: github.ref_type == 'tag' && endsWith(github.ref_type, '-test')
   build-test:
-    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@feature-audit
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@CPROD-1147
     with:
       container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.11
       disable-cache: ${{ inputs.disable-cache == true }}
@@ -36,8 +37,9 @@ jobs:
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
   
   upgrade-check:
+    if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_type, '-test')) }}
     needs: [build-test]
-    uses: infinity-swap/ci-wf/.github/workflows/dfx-upgrade-check.yml@main
+    uses: infinity-swap/ci-wf/.github/workflows/dfx-upgrade-check.yml@main 
     with:
       latest-image: ghcr.io/infinity-swap/example-dev-image:latest
       upgrade-script: ./scripts/upgrade-check.sh
@@ -54,7 +56,7 @@ jobs:
       input-artifact: artiract-hello
       output-image-name: example-wrapped-wasm
       # Condition to use latest tag
-      output-image-tag-latest: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
+      output-image-tag-latest: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main'}}
       # Condition to publish docker image
       push-image: ${{ (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') ||  github.ref_type == 'tag' }}
 
