@@ -12,6 +12,7 @@ on:
 
 jobs:
   cargo-docs:
+    if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_type, '-test') }}
     uses: infinity-swap/ci-wf/.github/workflows/publish-cargo-docs.yml@main
     with:
       gcs_bucket: 'infinity-rust-docs'

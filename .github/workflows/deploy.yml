@@ -11,6 +11,7 @@ env:
 jobs:
   deploy:
     # if: contains(fromJson(env.DEPLOY_ALOWED_USERS), github.actor)
+    if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_type, '-test') }}
     uses: infinity-swap/ci-wf/.github/workflows/deploy-cloud-run.yml@main
     with:
       gcp_project: dfx-server
