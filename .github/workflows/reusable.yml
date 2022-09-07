@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-test:
-    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@feature-audit
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@CPROD-1147
     with:
       container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.11
       disable-cache: ${{ inputs.disable-cache == true }}
