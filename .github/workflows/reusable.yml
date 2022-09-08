@@ -16,7 +16,7 @@ on:
 
 jobs:
   # Detect test tag
-  # if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_type, '-test')) }}
+  # if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_name, '-test')) }}
   build-test:
     uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@CPROD1147
     with:
@@ -38,6 +38,7 @@ jobs:
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
   
   upgrade-check:
+    if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_name, '-test')) }}
     needs: [build-test]
     uses: infinity-swap/ci-wf/.github/workflows/dfx-upgrade-check.yml@main 
     with:
