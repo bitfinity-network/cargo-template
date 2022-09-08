@@ -15,10 +15,8 @@ on:
   #     - 'v*'
 
 jobs:
-  # Detect test tag
-  # if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_type, '-test')) }}
   build-test:
-    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@CPROD1147
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
     with:
       container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.11
       disable-cache: ${{ inputs.disable-cache == true }}
@@ -38,6 +36,8 @@ jobs:
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
   
   upgrade-check:
+    # Other dependant jobs will be skipped 
+    # if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_name, '-test')) }}
     needs: [build-test]
     uses: infinity-swap/ci-wf/.github/workflows/dfx-upgrade-check.yml@main 
     with:
