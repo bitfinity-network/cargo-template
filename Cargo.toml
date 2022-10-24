@@ -4,5 +4,5 @@ members = [
 ]
 
 [package]
-version = "0.42.1"
+version = "0.42.2"
 edition = "2018"
