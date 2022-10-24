@@ -13,4 +13,3 @@ jobs:
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
-
