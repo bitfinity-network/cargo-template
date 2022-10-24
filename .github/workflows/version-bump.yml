@@ -1,4 +1,4 @@
-name: "Bump version"
+name: "Bump package version"
 
 on:
   workflow_dispatch:
@@ -13,3 +13,4 @@ jobs:
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
+
