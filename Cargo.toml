@@ -2,3 +2,7 @@
 members = [
     "src/hello_ic",
 ]
+
+[package]
+version = "v0.20.3"
+edition = "2018"

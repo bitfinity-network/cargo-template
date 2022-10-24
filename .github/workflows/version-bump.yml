@@ -1,0 +1,15 @@
+name: "Bump version"
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:    
+      - 'main'  
+
+jobs:
+  versioning:
+    uses: infinity-swap/ci-wf/.github/workflows/bump-version-tag.yml@feature/bump
+
+    secrets:
+      gh_token: ${{ secrets.GH_PKG_TOKEN }}

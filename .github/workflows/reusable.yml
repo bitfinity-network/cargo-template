@@ -1,4 +1,9 @@
 name: "Build & Puplish"
+# Workflow with single reusable pipeline for build & tests
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
   workflow_dispatch:
