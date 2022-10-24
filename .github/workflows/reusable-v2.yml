@@ -1,0 +1,88 @@
+name: "Build & Test & Puplish"
+
+on:
+  workflow_dispatch:
+    # inputs: 
+    #   disable-cache:
+    #     description: 'Disable cargo cache'
+    #     type: boolean 
+    #     required: false
+
+  push:
+    branches:    
+      - 'main'  
+    tags:
+      - 'v*'
+
+jobs:
+
+  build:
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@tests-and-build
+    with:
+      container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.11
+      disable-cache: ${{ inputs.disable-cache == true }}
+      output-artifact: artiract-hello
+      build-script: |
+        ./scripts/build-artifact.sh
+
+    secrets:
+      gh_token: ${{ secrets.GH_PKG_TOKEN }}
+      gh_login: ${{ secrets.GH_PKG_LOGIN }}
+
+  build-failed:
+    if: ${{ failure() }}
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: cancelling
+        uses: andymckay/cancel-action@0.2
+
+
+  test:
+    if: ${{ github.ref_type != 'tag' }}
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@tests-and-build
+    with:
+      container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.11
+      disable-cache: ${{ inputs.disable-cache == true }}
+      #audit-allow-warnings: true
+      test-script: |
+        dev/dfx.run.tests.sh
+
+    secrets:
+      gh_token: ${{ secrets.GH_PKG_TOKEN }}
+      gh_login: ${{ secrets.GH_PKG_LOGIN }}   
+  
+  
+  test-failed:
+    if: ${{ failure() }}
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: cancelling
+        uses: andymckay/cancel-action@0.2
+
+  # release:
+  #   # if: startsWith(github.ref, 'refs/tags/')
+  #   if: ${{github.ref_type == 'tag'}}
+  #   needs: [build, test]
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+
+  #   - name: "Getting artifact"
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: artiract-hello
+  #       path: ./.artifact
+
+  #   - name: "Compress"
+  #     run: |
+  #       cd .artifact
+  #       tar -c -f binaries-${{ github.ref_name }}.tar.gz --owner=0 --group=0 --no-same-owner --no-same-permissions .
+
+  #   - name: Release
+  #     uses: softprops/action-gh-release@v1
+  #     with:
+  #       files: |
+  #         .artifact/*.tar.gz
+  
