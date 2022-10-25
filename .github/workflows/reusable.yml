@@ -14,8 +14,8 @@ on:
         required: false
 
   push:
-    branches:    
-      - 'main'  
+    # branches:    
+    #   - 'main'  
     tags:
       - 'v*'
 
@@ -23,7 +23,7 @@ jobs:
   build-test:
     uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
     with:
-      container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.62-dfx0.11
+      container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.64-dfx0.11-rc-2022-09-30
       disable-cache: ${{ inputs.disable-cache == true }}
       test-script: dev/dfx.run.tests.sh
       skip-test: ${{ github.ref_type == 'tag' }}
@@ -113,21 +113,4 @@ jobs:
       with:
         files: |
           .artifact/*.tar.gz
-
-
-  bump:
-    if: ${{ github.ref_type == 'branch' && github.ref == 'refs/heads/main' }}
-    # needs: [publish-bin, publish-dev]
-    needs: [publish-dev]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: '0'
-    - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.36.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_PKG_TOKEN }}
-        WITH_V: true
-        # DRY_RUN: true
 
