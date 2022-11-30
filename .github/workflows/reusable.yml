@@ -14,14 +14,14 @@ on:
         required: false
 
   push:
-    # branches:    
-    #   - 'main'  
+    branches:    
+      - 'main'  
     tags:
       - 'v*'
 
 jobs:
   build-test:
-    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@main
+    uses: infinity-swap/ci-wf/.github/workflows/build-n-test.yml@cache-improve
     with:
       container-image: ghcr.io/infinity-swap/ic-dev-full:rust1.64-dfx0.11-rc-2022-09-30
       disable-cache: ${{ inputs.disable-cache == true }}
@@ -40,19 +40,19 @@ jobs:
       gh_login: ${{ secrets.GH_PKG_LOGIN }}
 
 
-  upgrade-check:
-    # Other dependant jobs will be skipped 
-    if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_name, '-test')) }}
-    needs: [build-test]
-    uses: infinity-swap/ci-wf/.github/workflows/dfx-upgrade-check.yml@main 
-    with:
-      latest-image: ghcr.io/infinity-swap/example-dev-image:latest
-      upgrade-script: ./scripts/upgrade-check.sh
-      input-artifact: artiract-hello
-      skip-check: ${{ github.ref_type == 'tag' }}
-    secrets:
-      gh_token: ${{ secrets.GH_PKG_TOKEN }}
-      gh_login: ${{ secrets.GH_PKG_LOGIN }}
+  # upgrade-check:
+  #   # Other dependant jobs will be skipped 
+  #   if: ${{ ! (github.ref_type == 'tag' && endsWith(github.ref_name, '-test')) }}
+  #   needs: [build-test]
+  #   uses: infinity-swap/ci-wf/.github/workflows/dfx-upgrade-check.yml@main 
+  #   with:
+  #     latest-image: ghcr.io/infinity-swap/example-dev-image:latest
+  #     upgrade-script: ./scripts/upgrade-check.sh
+  #     input-artifact: artiract-hello
+  #     skip-check: ${{ github.ref_type == 'tag' }}
+  #   secrets:
+  #     gh_token: ${{ secrets.GH_PKG_TOKEN }}
+  #     gh_login: ${{ secrets.GH_PKG_LOGIN }}
 
   # publish-bin:
   #   needs: [upgrade-check]
@@ -70,7 +70,8 @@ jobs:
   #     gh_login: ${{ secrets.GH_PKG_LOGIN }}
 
   publish-dev:
-    needs: [upgrade-check]
+    # needs: [upgrade-check]
+    needs: [build-test]
     uses: infinity-swap/ci-wf/.github/workflows/publish-dev-image.yml@main
     with:
       input-artifact: artiract-hello
