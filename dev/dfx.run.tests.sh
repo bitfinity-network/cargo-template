@@ -86,8 +86,8 @@ timeout 180 \
 ic-nns-init --url $IC_URI \
 --wasm-dir $DFX_WASMS_DIR \
 --initial-neurons $SCRIPT_DIR/initial-neurons.csv \
---minter $minter \
 --initialize-ledger-with-test-accounts-for-principals $principal
+# --minter $minter \
 
 if [ $? -ne 0 ]; then echo "ERROR! NNS deploy failed!"; exit 1; fi
 
