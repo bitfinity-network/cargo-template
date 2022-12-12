@@ -9,7 +9,8 @@ on:
 
 jobs:
   versioning:
-    uses: infinity-swap/ci-wf/.github/workflows/bump-version-tag.yml@main
+    uses: infinity-swap/ci-wf/.github/workflows/bump-version-tag.yml@mbranch
 
     secrets:
       gh_token: ${{ secrets.GH_PKG_TOKEN }}
+
